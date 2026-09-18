@@ -21,18 +21,17 @@ title: "오늘의 기록"
 
 {% if sorted_posts.size > 0 %}
   {% for post in sorted_posts %}
-    <article class="diary-entry">
-      <div class="entry-meta">
+    <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 4px solid #3b82f6;">
+      <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px; font-weight: 500;">
         {{ post.date | date: "%Y년 %m월 %d일 %H:%M" }} 기록
       </div>
-      <div class="entry-content">
-        {{ post.content }}
+      <div style="line-height: 1.7; font-size: 1rem;">
+        {{ post.content | markdownify }}
       </div>
-    </article>
+    </div>
   {% endfor %}
 {% else %}
   <div style="text-align: center; padding: 40px; background: #fff; border-radius: 12px; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <p>오늘 날짜에 작성된 과거의 기록이 없습니다.</p>
-    <p style="font-size: 0.9rem; margin-top: 5px;">_posts 폴더에 2026-09-18-12-00-00.md 형식으로 첫 글을 남겨보세요!</p>
   </div>
 {% endif %}
