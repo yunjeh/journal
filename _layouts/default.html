@@ -1,21 +1,79 @@
 <!DOCTYPE html>
-<html lang="{{ page.lang | default: "en" }}">
-  {%- include head.html -%}
-  <body a="{{ site.theme_config.appearance | default: "auto" }}">
-    <main class="page-content" aria-label="Content">
-      <div class="w">
-        {{ content }}
-      </div>
-    </main>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page.title | default: site.title }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .diary-container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .diary-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        .current-date {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .nav-btn {
+            background: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        .diary-entry {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+        .entry-meta {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .entry-content {
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="diary-container">
+        <!-- 상단 날짜 네비게이션 -->
+        <header class="diary-header">
+            <button class="nav-btn">◀</button>
+            <h1 class="current-date">{{ site.time | date: "%Y년 %m월 %d일" }}</h1>
+            <button class="nav-btn">▶</button>
+        </header>
 
-    {%-if site.goat_counter and jekyll.environment == "production"-%}
-      {%-include goat_counter.html-%}
-    {%-endif-%}
-
-    {% if page.custom_js %}
-      {% for js_file in page.custom_js %}
-        <script type="text/javascript" src="{{ site.baseurl }}/assets/js/{{ js_file }}.js"></script>
-      {% endfor %}
-    {% endif %}
-  </body>
+        <!-- 메인 피드 영역 -->
+        <main class="diary-main">
+            {{ content }}
+        </main>
+    </div>
+</body>
 </html>
