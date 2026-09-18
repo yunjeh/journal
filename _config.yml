@@ -1,9 +1,9 @@
 timezone: Asia/Seoul
-title: "라이프로그-저널" # name of the site
+title: "라이프로그 - On This Day" # name of the site
 author: jyun # name of site's author
 email:  # email of site's author
 url:  # root address of the site
-baseurl: ""
+baseurl: "/onthisday"
 #"/" #"/no-style-please" # subpath of the site, e.g. "/blog" (leave it blank "" if you're site shouldn't use a subpath)
 description: > # description of the site (multiple lines allowed)
   아 집이 최고다
@@ -44,16 +44,3 @@ jektex:
     - ["\\C", "\\mathbb{C}"]
 include:
   - _images
-
-collections:
-  archive:
-    permalink: /archive/:path/
-  quotes:
-    output: true
-    permalink: /quotes/:path/
-  notes:
-    output: true
-    permalink: /notes/:path/
-  places:
-    permalink: /places/:path/
-  
