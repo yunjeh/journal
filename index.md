@@ -26,6 +26,7 @@ title: "오늘의 기록"
         {{ post.date | date: "%Y년 %m월 %d일 %H:%M" }} 기록
       </div>
       <div style="line-height: 1.7; font-size: 1rem;">
+        <!-- markdownify를 통해 HTML/마크다운 태그가 정상 렌더링되도록 수정 -->
         {{ post.content | markdownify }}
       </div>
     </div>
@@ -33,5 +34,6 @@ title: "오늘의 기록"
 {% else %}
   <div style="text-align: center; padding: 40px; background: #fff; border-radius: 12px; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <p>오늘 날짜에 작성된 과거의 기록이 없습니다.</p>
+    <p style="font-size: 0.9rem; margin-top: 5px;">_posts 폴더에 2026-09-18-21-56-00.md 형식으로 글을 남겨보세요!</p>
   </div>
 {% endif %}
