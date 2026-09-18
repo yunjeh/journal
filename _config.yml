@@ -2,7 +2,7 @@ timezone: Asia/Seoul
 title: "라이프로그 - On This Day" # name of the site
 author: jyun # name of site's author
 email:  # email of site's author
-url:  # root address of the site
+url: "https://yunjeh.github.io" # root address of the site
 baseurl: "/onthisday"
 #"/" #"/no-style-please" # subpath of the site, e.g. "/blog" (leave it blank "" if you're site shouldn't use a subpath)
 description: > # description of the site (multiple lines allowed)
