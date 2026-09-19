@@ -13,7 +13,7 @@
             display: flex;
             justify-content: center;
         }
-        /* 전체 레이아웃: 좌측 달력(컴팩트) + 우측 다이어리 본문 */
+        /* 전체 레이아웃: 좌측 달력 + 우측 다이어리 본문 */
         .site-wrapper {
             display: flex;
             gap: 24px;
@@ -21,7 +21,7 @@
             max-width: 880px;
             align-items: flex-start;
         }
-        /* 좌측 달력 사이드바 (사이즈 축소 및 고정) */
+        /* 좌측 달력 사이드바 */
         .calendar-sidebar {
             width: 220px;
             background: #ffffff;
@@ -56,29 +56,30 @@
         .cal-cell {
             padding: 4px 0;
             border-radius: 4px;
-            color: #cbd5e1; /* 기본(글 없는 날) 연하게 표시 */
+            color: #cbd5e1; /* 글이 없는 날짜: 연하게 표시 */
             display: flex;
             align-items: center;
             justify-content: center;
-            aspect-ratio: 1; /* 정사각형 셀 고정으로 깨짐 원천 차단 */
+            aspect-ratio: 1;
             font-size: 0.8rem;
         }
-        /* 글이 있는 날짜 스타일 (진하게 & 클릭 가능) */
+        /* 포스트가 있는 날짜: 진하고 선명한 색상 & 클릭 가능 */
         .cal-cell.has-post {
-            color: #1e293b;
-            font-weight: 700;
-            background: #f1f5f9;
+            color: #0f172a;
+            font-weight: 800;
+            background: #e2e8f0;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
         .cal-cell.has-post:hover {
-            background: #e2e8f0;
-            color: #2563eb;
+            background: #cbd5e1;
+            color: #1d4ed8;
         }
-        /* 현재 선택된 날짜 스타일 */
+        /* 현재 선택된 날짜: 파란색 강조 */
         .cal-cell.selected {
             background: #3b82f6 !important;
             color: #ffffff !important;
+            font-weight: 800;
         }
 
         /* 우측 다이어리 본문 영역 */
@@ -118,7 +119,6 @@
             background: #f1f5f9;
         }
 
-        /* 반응형: 화면이 좁아지면 세로로 배치 */
         @media (max-width: 768px) {
             .site-wrapper {
                 flex-direction: column;
@@ -133,7 +133,7 @@
 </head>
 <body>
     <div class="site-wrapper">
-        <!-- 좌측 캘린더 사이드바 (사이즈 축소) -->
+        <!-- 좌측 캘린더 사이드바 -->
         <aside class="calendar-sidebar">
             <div class="cal-header">
                 <span id="cal-month-title">로딩 중...</span>
@@ -176,6 +176,8 @@
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
             let mmddStr = urlParams.get('date');
+            
+            // 현재 연도 (2026년) 기준 설정
             const currentYear = new Date().getFullYear();
 
             if (!mmddStr || !/^\d{2}-\d{2}$/.test(mmddStr)) {
@@ -202,7 +204,7 @@
             document.getElementById('prev-btn').href = `?date=${formatMMDD(prevDate)}`;
             document.getElementById('next-btn').href = `?date=${formatMMDD(nextDate)}`;
 
-            // 3. 좌측 캘린더 렌더링 (컴팩트 사이즈)
+            // 3. 좌측 캘린더 렌더링
             const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
             document.getElementById('cal-month-title').innerText = `${currentYear}년 ${monthNames[targetMonth]}`;
 
@@ -226,6 +228,7 @@
                 cell.className = 'cal-cell';
                 cell.innerText = day;
 
+                // 포스트가 있는 날짜는 짙은 색으로 강조하고 클릭 이벤트 부여
                 if (existingDates.includes(cellMMDD)) {
                     cell.classList.add('has-post');
                     cell.onclick = function() {
@@ -233,6 +236,7 @@
                     };
                 }
 
+                // 현재 선택된 날짜 표시
                 if (cellMMDD === mmddStr) {
                     cell.classList.add('selected');
                 }
