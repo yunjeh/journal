@@ -54,7 +54,7 @@
         <!-- 상단 삼각형 네비게이션 헤더 -->
         <header class="diary-header">
             <a href="#" id="prev-btn" class="nav-btn">◀ 전날</a>
-            <h1 class="current-date" id="header-date-text">로딩 중...</h1>
+            <h1 class="current-date" id="header-date-text">09월 19일</h1>
             <a href="#" id="next-btn" class="nav-btn">다음날 ▶</a>
         </header>
 
@@ -65,43 +65,52 @@
     </div>
 
     <script>
-        // URL에서 ?date=MM-DD 파라미터를 읽어옵니다.
-        const urlParams = new URLSearchParams(window.location.search);
-        let mmddStr = urlParams.get('date');
+        // DOM이 완전히 로드된 후에 실행되도록 안전장치 추가
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let mmddStr = urlParams.get('date');
 
-        let currentDate;
-        const currentYear = new Date().getFullYear(); // 연도는 계산용으로 올해 연도 차용
+            let currentDate;
+            const currentYear = new Date().getFullYear();
 
-        if (mmddStr && /^\d{2}-\d{2}$/.test(mmddStr)) {
-            currentDate = new Date(`${currentYear}-${mmddStr}T00:00:00`);
-        } else {
-            currentDate = new Date(`${currentYear}-09-19T00:00:00`); // 기본 오늘 날짜
-        }
+            if (mmddStr && /^\d{2}-\d{2}$/.test(mmddStr)) {
+                currentDate = new Date(`${currentYear}-${mmddStr}T00:00:00`);
+            } else {
+                currentDate = new Date(`${currentYear}-09-19T00:00:00`);
+            }
 
-        // 월-일 포맷 함수 (MM-DD)
-        function formatMMDD(d) {
-            let month = String(d.getMonth() + 1).padStart(2, '0');
-            let day = String(d.getDate()).padStart(2, '0');
-            return `${month}-${day}`;
-        }
+            // 월-일 포맷 함수 (MM-DD)
+            function formatMMDD(d) {
+                let month = String(d.getMonth() + 1).padStart(2, '0');
+                let day = String(d.getDate()).padStart(2, '0');
+                return `${month}-${day}`;
+            }
 
-        // 상단 헤더 표시 (월, 일만 표시)
-        const dateString = currentDate.toLocaleDateString('ko-KR', {
-            month: 'long',
-            day: 'numeric'
+            // 상단 헤더 표시
+            const dateString = currentDate.toLocaleDateString('ko-KR', {
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const headerElem = document.getElementById('header-date-text');
+            if (headerElem) {
+                headerElem.innerText = dateString;
+            }
+
+            // 전날, 다음날 계산
+            let prevDate = new Date(currentDate);
+            prevDate.setDate(currentDate.getDate() - 1);
+
+            let nextDate = new Date(currentDate);
+            nextDate.setDate(currentDate.getDate() + 1);
+
+            // 버튼 링크 연결
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            if (prevBtn) prevBtn.href = `?date=${formatMMDD(prevDate)}`;
+            if (nextBtn) nextBtn.href = `?date=${formatMMDD(nextDate)}`;
         });
-        document.getElementById('header-date-text').innerText = dateString;
-
-        // 전날, 다음날 계산 (연도가 바뀌는 윤년 등도 Date 객체가 알아서 처리해줍니다)
-        let prevDate = new Date(currentDate);
-        prevDate.setDate(currentDate.getDate() - 1);
-
-        let nextDate = new Date(currentDate);
-        nextDate.setDate(currentDate.getDate() + 1);
-
-        // 버튼 링크를 ?date=MM-DD 형태로 연결
-        document.getElementById('prev-btn').href = `?date=${formatMMDD(prevDate)}`;
-        document.getElementById('next-btn').href = `?date=${formatMMDD(nextDate)}`;
     </script>
 </body>
 </html>
