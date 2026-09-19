@@ -13,8 +13,70 @@
             display: flex;
             justify-content: center;
         }
-        .diary-container {
+        /* 전체 레이아웃: 좌측 달력 + 우측 다이어리 본문 */
+        .site-wrapper {
+            display: flex;
+            gap: 30px;
             width: 100%;
+            max-width: 920px;
+            align-items: flex-start;
+        }
+        /* 좌측 달력 사이드바 스타일 */
+        .calendar-sidebar {
+            width: 260px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+        }
+        .cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #1e293b;
+        }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .cal-day-name {
+            color: #94a3b8;
+            font-weight: 500;
+            padding-bottom: 8px;
+        }
+        .cal-cell {
+            padding: 8px 0;
+            border-radius: 6px;
+            color: #cbd5e1; /* 기본(글 없는 날) 연하게 표시 */
+        }
+        /* 글이 있는 날짜 스타일 (진하게 & 클릭 가능) */
+        .cal-cell.has-post {
+            color: #1e293b;
+            font-weight: 700;
+            background: #f1f5f9;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .cal-cell.has-post:hover {
+            background: #e2e8f0;
+            color: #2563eb;
+        }
+        /* 현재 선택된 날짜 스타일 */
+        .cal-cell.selected {
+            background: #3b82f6 !important;
+            color: #ffffff !important;
+        }
+
+        /* 우측 다이어리 본문 영역 */
+        .diary-container {
+            flex-grow: 1;
             max-width: 600px;
         }
         .diary-header {
@@ -47,69 +109,134 @@
         .nav-btn:hover {
             background: #f1f5f9;
         }
+
+        /* 반응형: 화면이 좁아지면(모바일 등) 세로로 배치 */
+        @media (max-width: 768px) {
+            .site-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .calendar-sidebar {
+                width: 100%;
+                max-width: 600px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="diary-container">
-        <!-- 상단 삼각형 네비게이션 헤더 -->
-        <header class="diary-header">
-            <a href="#" id="prev-btn" class="nav-btn">◀ 전날</a>
-            <h1 class="current-date" id="header-date-text">09월 19일</h1>
-            <a href="#" id="next-btn" class="nav-btn">다음날 ▶</a>
-        </header>
+    <div class="site-wrapper">
+        <!-- 좌측 캘린더 사이드바 -->
+        aside class="calendar-sidebar">
+            <div class="cal-header">
+                <span id="cal-month-title">로딩 중...</span>
+            </div>
+            <div class="cal-grid">
+                <div class="cal-day-name">일</div>
+                <div class="cal-day-name">월</div>
+                <div class="cal-day-name">화</div>
+                <div class="cal-day-name">수</div>
+                <div class="cal-day-name">목</div>
+                <div class="cal-day-name">금</div>
+                <div class="cal-day-name">토</div>
+            </div>
+            <div id="cal-days-grid" class="cal-grid" style="margin-top: 5px;"></div>
+        </aside>
 
-        <!-- 메인 피드 영역 -->
-        <main class="diary-main">
-            {{ content }}
-        </main>
+        <!-- 우측 다이어리 본문 영역 -->
+        <div class="diary-container">
+            <header class="diary-header">
+                <a href="#" id="prev-btn" class="nav-btn">◀ 전날</a>
+                <h1 class="current-date" id="header-date-text">로딩 중...</h1>
+                <a href="#" id="next-btn" class="nav-btn">다음날 ▶</a>
+            </header>
+
+            <main class="diary-main">
+                {{ content }}
+            </main>
+        </div>
     </div>
 
     <script>
-        // DOM이 완전히 로드된 후에 실행되도록 안전장치 추가
+        // Jekyll 빌드 시 작성된 모든 포스트의 MM-DD 목록 주입
+        const existingDates = [
+            {% assign post_dates = site.posts | map: "date" | date: "%m-%d" | uniq %}
+            {% for d in post_dates %}
+                "{{ d }}"{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+        ];
+
         document.addEventListener("DOMContentLoaded", function() {
             const urlParams = new URLSearchParams(window.location.search);
             let mmddStr = urlParams.get('date');
-
-            let currentDate;
             const currentYear = new Date().getFullYear();
 
-            if (mmddStr && /^\d{2}-\d{2}$/.test(mmddStr)) {
-                currentDate = new Date(`${currentYear}-${mmddStr}T00:00:00`);
-            } else {
-                currentDate = new Date(`${currentYear}-09-19T00:00:00`);
+            if (!mmddStr || !/^\d{2}-\d{2}$/.test(mmddStr)) {
+                // 파라미터가 없으면 오늘 날짜 기준
+                const today = new Date();
+                mmddStr = String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
             }
 
-            // 월-일 포맷 함수 (MM-DD)
-            function formatMMDD(d) {
-                let month = String(d.getMonth() + 1).padStart(2, '0');
-                let day = String(d.getDate()).padStart(2, '0');
-                return `${month}-${day}`;
-            }
+            const currentDate = new Date(`${currentYear}-${mmddStr}T00:00:00`);
+            const targetMonth = currentDate.getMonth(); // 0~11
+            const targetDay = currentDate.getDate();
 
-            // 상단 헤더 표시
-            const dateString = currentDate.toLocaleDateString('ko-KR', {
-                month: 'long',
-                day: 'numeric'
-            });
-            
-            const headerElem = document.getElementById('header-date-text');
-            if (headerElem) {
-                headerElem.innerText = dateString;
-            }
+            // 1. 상단 헤더 날짜 표시
+            const dateString = currentDate.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+            document.getElementById('header-date-text').innerText = dateString;
 
-            // 전날, 다음날 계산
+            // 2. 전날 / 다음날 버튼 링크 설정 (단순 하루 단위 이동)
             let prevDate = new Date(currentDate);
             prevDate.setDate(currentDate.getDate() - 1);
-
             let nextDate = new Date(currentDate);
             nextDate.setDate(currentDate.getDate() + 1);
 
-            // 버튼 링크 연결
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            
-            if (prevBtn) prevBtn.href = `?date=${formatMMDD(prevDate)}`;
-            if (nextBtn) nextBtn.href = `?date=${formatMMDD(nextDate)}`;
+            function formatMMDD(d) {
+                return String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            }
+            document.getElementById('prev-btn').href = `?date=${formatMMDD(prevDate)}`;
+            document.getElementById('next-btn').href = `?date=${formatMMDD(nextDate)}`;
+
+            // 3. 좌측 캘린더 렌더링
+            const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
+            document.getElementById('cal-month-title').innerText = `${currentYear}년 ${monthNames[targetMonth]}`;
+
+            const firstDayIndex = new Date(currentYear, targetMonth, 1).getDay(); // 해당 월 1일의 요일 (0: 일요일)
+            const totalDays = new Date(currentYear, targetMonth + 1, 0).getDate(); // 해당 월의 총 일수
+
+            const daysGrid = document.getElementById('cal-days-grid');
+            daysGrid.innerHTML = '';
+
+            // 빈 칸 채우기 (1일 전 요일)
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                daysGrid.appendChild(emptyCell);
+            }
+
+            // 날짜 채우기
+            for (let day = 1; day <= totalDays; day++) {
+                const dayStr = String(day).padStart(2, '0');
+                const cellMMDD = `${String(targetMonth + 1).padStart(2, '0')}-${dayStr}`;
+
+                const cell = document.createElement('div');
+                cell.className = 'cal-cell';
+                cell.innerText = day;
+
+                // 입력 내용(포스트)이 있는 날짜인지 확인
+                if (existingDates.includes(cellMMDD)) {
+                    cell.classList.add('has-post');
+                    // 클릭 시 해당 날짜로 이동
+                    cell.onclick = function() {
+                        window.location.href = `?date=${cellMMDD}`;
+                    };
+                }
+
+                // 현재 선택된 날짜 표시
+                if (cellMMDD === mmddStr) {
+                    cell.classList.add('selected');
+                }
+
+                daysGrid.appendChild(cell);
+            }
         });
     </script>
 </body>
