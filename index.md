@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "나의 n년 다이어리"
+title: "On This Day"
 ---
 
 {% assign sorted_posts = site.posts | sort: "date" | reverse %}
