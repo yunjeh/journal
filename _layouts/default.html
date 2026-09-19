@@ -65,49 +65,43 @@
     </div>
 
     <script>
-        // 전역 함수로 헤더 날짜 업데이트 로직 정의
-        function updateHeaderDate(dateStr) {
-            const targetDate = new Date(dateStr + 'T00:00:00');
-            
-            // 한국어 날짜 표시 (예: 2026년 9월 19일)
-            const dateString = targetDate.toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            document.getElementById('header-date-text').innerText = dateString;
+        // URL에서 ?date=MM-DD 파라미터를 읽어옵니다.
+        const urlParams = new URLSearchParams(window.location.search);
+        let mmddStr = urlParams.get('date');
 
-            // 전날, 다음날 계산
-            let prevDate = new Date(targetDate);
-            prevDate.setDate(targetDate.getDate() - 1);
+        let currentDate;
+        const currentYear = new Date().getFullYear(); // 연도는 계산용으로 올해 연도 차용
 
-            let nextDate = new Date(targetDate);
-            nextDate.setDate(targetDate.getDate() + 1);
-
-            // 날짜 포맷 함수 (YYYY-MM-DD)
-            function formatDate(d) {
-                let year = d.getFullYear();
-                let month = String(d.getMonth() + 1).padStart(2, '0');
-                let day = String(d.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            }
-
-            // 버튼 링크 연결
-            document.getElementById('prev-btn').href = `?date=${formatDate(prevDate)}`;
-            document.getElementById('next-btn').href = `?date=${formatDate(nextDate)}`;
+        if (mmddStr && /^\d{2}-\d{2}$/.test(mmddStr)) {
+            currentDate = new Date(`${currentYear}-${mmddStr}T00:00:00`);
+        } else {
+            currentDate = new Date(`${currentYear}-09-19T00:00:00`); // 기본 오늘 날짜
         }
 
-        // 페이지 로드 시 초기 URL 파라미터 반영
-        const initialParams = new URLSearchParams(window.location.search);
-        let initialDateStr = initialParams.get('date');
-        if (!initialDateStr) {
-            const today = new Date();
-            const y = today.getFullYear();
-            const m = String(today.getMonth() + 1).padStart(2, '0');
-            const d = String(today.getDate()).padStart(2, '0');
-            initialDateStr = `${y}-${m}-${d}`;
+        // 월-일 포맷 함수 (MM-DD)
+        function formatMMDD(d) {
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let day = String(d.getDate()).padStart(2, '0');
+            return `${month}-${day}`;
         }
-        updateHeaderDate(initialDateStr);
+
+        // 상단 헤더 표시 (월, 일만 표시)
+        const dateString = currentDate.toLocaleDateString('ko-KR', {
+            month: 'long',
+            day: 'numeric'
+        });
+        document.getElementById('header-date-text').innerText = dateString;
+
+        // 전날, 다음날 계산 (연도가 바뀌는 윤년 등도 Date 객체가 알아서 처리해줍니다)
+        let prevDate = new Date(currentDate);
+        prevDate.setDate(currentDate.getDate() - 1);
+
+        let nextDate = new Date(currentDate);
+        nextDate.setDate(currentDate.getDate() + 1);
+
+        // 버튼 링크를 ?date=MM-DD 형태로 연결
+        document.getElementById('prev-btn').href = `?date=${formatMMDD(prevDate)}`;
+        document.getElementById('next-btn').href = `?date=${formatMMDD(nextDate)}`;
     </script>
 </body>
 </html>
