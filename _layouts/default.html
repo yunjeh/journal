@@ -18,32 +18,44 @@
             max-width: 600px;
         }
         .diary-header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background: #ffffff;
-            padding: 20px;
+            padding: 15px 25px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             margin-bottom: 25px;
         }
         .current-date {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 600;
             margin: 0;
             color: #1e293b;
         }
-        .diary-subtext {
-            font-size: 0.85rem;
-            color: #64748b;
-            margin-top: 5px;
+        .nav-btn {
+            background: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #475569;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .nav-btn:hover {
+            background: #f1f5f9;
         }
     </style>
 </head>
 <body>
     <div class="diary-container">
-        <!-- 상단 날짜 헤더 -->
+        <!-- 상단 삼각형 네비게이션 헤더 -->
         <header class="diary-header">
-            <h1 class="current-date">{{ site.time | date: "%Y년 %m월 %d일" }}</h1>
-            <div class="diary-subtext">매년 오늘 작성한 기록들</div>
+            <a href="#" id="prev-btn" class="nav-btn">◀ 전날</a>
+            <h1 class="current-date" id="header-date-text">날짜 로딩 중...</h1>
+            <a href="#" id="next-btn" class="nav-btn">다음날 ▶</a>
         </header>
 
         <!-- 메인 피드 영역 -->
@@ -51,5 +63,44 @@
             {{ content }}
         </main>
     </div>
+
+    <script>
+        // URL의 ?date=YYYY-MM-DD 값을 읽어오거나, 없으면 오늘 날짜를 사용합니다.
+        const urlParams = new URLSearchParams(window.location.search);
+        let targetDate;
+
+        if (urlParams.has('date')) {
+            targetDate = new Date(urlParams.get('date'));
+        } else {
+            // 빌드 시점의 기본 날짜 (예: 2026-09-19)
+            targetDate = new Date("2026-09-19"); 
+        }
+
+        // 날짜 포맷 함수 (YYYY-MM-DD)
+        function formatDate(d) {
+            let year = d.getFullYear();
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // 상단 헤더에 한국어 날짜 표시
+        document.getElementById('header-date-textinnerText = targetDate.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // 전날, 다음날 계산
+        let prevDate = new Date(targetDate);
+        prevDate.setDate(targetDate.getDate() - 1);
+
+        let nextDate = new Date(targetDate);
+        nextDate.setDate(targetDate.getDate() + 1);
+
+        // 버튼 링크 연결
+        document.getElementById('prev-btn').href = `?date=${formatDate(prevDate)}`;
+        document.getElementById('next-btn').href = `?date=${formatDate(nextDate)}`;
+    </script>
 </body>
 </html>
