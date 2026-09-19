@@ -54,7 +54,7 @@
         <!-- 상단 삼각형 네비게이션 헤더 -->
         <header class="diary-header">
             <a href="#" id="prev-btn" class="nav-btn">◀ 전날</a>
-            <h1 class="current-date" id="header-date-text">날짜 로딩 중...</h1>
+            <h1 class="current-date" id="header-date-text">로딩 중...</h1>
             <a href="#" id="next-btn" class="nav-btn">다음날 ▶</a>
         </header>
 
@@ -65,15 +65,14 @@
     </div>
 
     <script>
-        // URL의 ?date=YYYY-MM-DD 값을 읽어오거나, 없으면 오늘 날짜를 사용합니다.
+        // URL의 ?date=YYYY-MM-DD 값을 읽어오거나, 없으면 오늘 날짜(2026-09-19 기준)를 사용합니다.
         const urlParams = new URLSearchParams(window.location.search);
         let targetDate;
 
         if (urlParams.has('date')) {
-            targetDate = new Date(urlParams.get('date'));
+            targetDate = new Date(urlParams.get('date') + 'T00:00:00');
         } else {
-            // 빌드 시점의 기본 날짜 (예: 2026-09-19)
-            targetDate = new Date("2026-09-19"); 
+            targetDate = new Date("2026-09-19T00:00:00"); 
         }
 
         // 날짜 포맷 함수 (YYYY-MM-DD)
@@ -84,12 +83,13 @@
             return `${year}-${month}-${day}`;
         }
 
-        // 상단 헤더에 한국어 날짜 표시
-        document.getElementById('header-date-textinnerText = targetDate.toLocaleDateString('ko-KR', {
+        // 상단 헤더에 한국어 날짜 표시 (오타 수정 완료)
+        const dateString = targetDate.toLocaleDateString('ko-KR', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
         });
+        document.getElementById('header-date-text').innerText = dateString;
 
         // 전날, 다음날 계산
         let prevDate = new Date(targetDate);
