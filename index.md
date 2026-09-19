@@ -7,10 +7,15 @@ title: "나의 n년 다이어리"
 
 <div id="posts-container">
   {% for post in sorted_posts %}
+    {% assign post_year = post.date | date: "%Y" %}
     {% assign post_month = post.date | date: "%m" %}
     {% assign post_day = post.date | date: "%d" %}
     
-    <article class="diary-entry" data-month-day="{{ post_month }}-{{ post_day }}" style="display: none; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 4px solid #3b82f6;">
+    <!-- 포스트의 연도와 월-일을 데이터 속성으로 심어둡니다 -->
+    <article class="diary-entry" 
+             data-year="{{ post_year }}" 
+             data-month-day="{{ post_month }}-{{ post_day }}" 
+             style="display: none; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px;">
       <div class="entry-meta" data-raw-date="{{ post.date | date: '%Y-%m-%d %H:%M' }}" style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px; font-weight: 500;">
         {{ post.date | date: "%Y. %m. %d. %H:%M" }}
       </div>
@@ -22,16 +27,18 @@ title: "나의 n년 다이어리"
 
   <div id="no-posts-msg" style="display: none; text-align: center; padding: 40px; background: #fff; border-radius: 12px; color: #64748b; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
     <p>이 날짜에 작성된 과거의 기록이 없습니다.</p>
-    <p style="font-size: 0.9rem; margin-top: 5px; color: #94a3b8;">삼각형 버튼으로 다른 날짜를 선택해보거나 첫 이야기를 남겨보세요!</p>
+    <p style="font-size: 0.9rem; margin-top: 5px; color: #94a3b8;">달력에서 다른 날짜를 선택해보거나 첫 이야기를 남겨보세요!</p>
   </div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // 1. 날짜 형식을 "2026. 09. 08. (화) 23:19" 형태로 변환
+        const currentRealYear = new Date().getFullYear().toString(); // "2026"
+
+        // 1. 날짜 포맷 변환 (2026. 09. 08. (화) 23:19)
         const metaElements = document.querySelectorAll('.entry-meta');
         metaElements.forEach(el => {
-            const rawDateStr = el.getAttribute('data-raw-date'); // "2026-09-08 23:19"
+            const rawDateStr = el.getAttribute('data-raw-date');
             if (rawDateStr) {
                 const dateObj = new Date(rawDateStr.replace(' ', 'T') + ':00');
                 if (!isNaN(dateObj)) {
@@ -41,16 +48,14 @@ title: "나의 n년 다이어리"
                     
                     const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
                     const wDay = weekdays[dateObj.getDay()];
-
                     const timePart = rawDateStr.split(' ')[1];
 
-                    // 일 뒤에 점과 띄어쓰기를 포함하여 조합
                     el.innerText = `${y}. ${m}. ${d}. (${wDay}) ${timePart}`;
                 }
             }
         });
 
-        // 2. URL의 ?date=MM-DD 파라미터에 맞춰 해당 날짜 글만 필터링
+        // 2. URL의 ?date=MM-DD 파라미터 필터링 및 올해/과거 포스트 스타일 분기
         const urlParams = new URLSearchParams(window.location.search);
         let targetMMDD = urlParams.get('date');
 
@@ -66,9 +71,22 @@ title: "나의 n년 다이어리"
 
         entries.forEach(entry => {
             const entryMMDD = entry.getAttribute('data-month-day');
+            const entryYear = entry.getAttribute('data-year');
+
             if (entryMMDD === targetMMDD) {
                 entry.style.display = 'block';
                 visibleCount++;
+
+                // ★ 핵심: 올해(2026년) 포스트와 지나간 연도 포스트 디자인 분기
+                if (entryYear === currentRealYear) {
+                    // 올해 포스트: 화사한 피치/살구빛 배경 + 포인트 테두리
+                    entry.style.background = '#fff5f5';
+                    entry.style.borderLeft = '4px solid #f43f5e';
+                } else {
+                    // 지나간 연도 포스트: 기존 깔끔한 흰색 배경 + 기본 파란색 테두리
+                    entry.style.background = '#ffffff';
+                    entry.style.borderLeft = '4px solid #3b82f6';
+                }
             } else {
                 entry.style.display = 'none';
             }
