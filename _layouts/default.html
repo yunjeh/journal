@@ -29,6 +29,7 @@
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             flex-shrink: 0;
+            box-sizing: border-box;
         }
         .cal-header {
             display: flex;
@@ -55,6 +56,10 @@
             padding: 8px 0;
             border-radius: 6px;
             color: #cbd5e1; /* 기본(글 없는 날) 연하게 표시 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1; /* 정사각형 셀 유지로 깨짐 방지 */
         }
         /* 글이 있는 날짜 스타일 (진하게 & 클릭 가능) */
         .cal-cell.has-post {
@@ -78,6 +83,7 @@
         .diary-container {
             flex-grow: 1;
             max-width: 600px;
+            min-width: 0;
         }
         .diary-header {
             display: flex;
@@ -110,7 +116,7 @@
             background: #f1f5f9;
         }
 
-        /* 반응형: 화면이 좁아지면(모바일 등) 세로로 배치 */
+        /* 반응형: 화면이 좁아지면 세로로 배치 */
         @media (max-width: 768px) {
             .site-wrapper {
                 flex-direction: column;
@@ -126,7 +132,7 @@
 <body>
     <div class="site-wrapper">
         <!-- 좌측 캘린더 사이드바 -->
-        aside class="calendar-sidebar">
+        <aside class="calendar-sidebar">
             <div class="cal-header">
                 <span id="cal-month-title">로딩 중...</span>
             </div>
@@ -171,20 +177,19 @@
             const currentYear = new Date().getFullYear();
 
             if (!mmddStr || !/^\d{2}-\d{2}$/.test(mmddStr)) {
-                // 파라미터가 없으면 오늘 날짜 기준
                 const today = new Date();
                 mmddStr = String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
             }
 
             const currentDate = new Date(`${currentYear}-${mmddStr}T00:00:00`);
-            const targetMonth = currentDate.getMonth(); // 0~11
+            const targetMonth = currentDate.getMonth(); 
             const targetDay = currentDate.getDate();
 
             // 1. 상단 헤더 날짜 표시
             const dateString = currentDate.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
             document.getElementById('header-date-text').innerText = dateString;
 
-            // 2. 전날 / 다음날 버튼 링크 설정 (단순 하루 단위 이동)
+            // 2. 전날 / 다음날 버튼 링크 설정
             let prevDate = new Date(currentDate);
             prevDate.setDate(currentDate.getDate() - 1);
             let nextDate = new Date(currentDate);
@@ -200,19 +205,18 @@
             const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
             document.getElementById('cal-month-title').innerText = `${currentYear}년 ${monthNames[targetMonth]}`;
 
-            const firstDayIndex = new Date(currentYear, targetMonth, 1).getDay(); // 해당 월 1일의 요일 (0: 일요일)
-            const totalDays = new Date(currentYear, targetMonth + 1, 0).getDate(); // 해당 월의 총 일수
+            const firstDayIndex = new Date(currentYear, targetMonth, 1).getDay();
+            const totalDays = new Date(currentYear, targetMonth + 1, 0).getDate();
 
             const daysGrid = document.getElementById('cal-days-grid');
             daysGrid.innerHTML = '';
 
-            // 빈 칸 채우기 (1일 전 요일)
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyCell = document.createElement('div');
+                emptyCell.className = 'cal-cell';
                 daysGrid.appendChild(emptyCell);
             }
 
-            // 날짜 채우기
             for (let day = 1; day <= totalDays; day++) {
                 const dayStr = String(day).padStart(2, '0');
                 const cellMMDD = `${String(targetMonth + 1).padStart(2, '0')}-${dayStr}`;
@@ -221,16 +225,13 @@
                 cell.className = 'cal-cell';
                 cell.innerText = day;
 
-                // 입력 내용(포스트)이 있는 날짜인지 확인
                 if (existingDates.includes(cellMMDD)) {
                     cell.classList.add('has-post');
-                    // 클릭 시 해당 날짜로 이동
                     cell.onclick = function() {
                         window.location.href = `?date=${cellMMDD}`;
                     };
                 }
 
-                // 현재 선택된 날짜 표시
                 if (cellMMDD === mmddStr) {
                     cell.classList.add('selected');
                 }
