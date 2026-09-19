@@ -5,9 +5,7 @@
     <title>{{ page.title | default: site.title }}</title>
     <style>
         body {
-            /* 모바일에서도 가독성 좋은 기본 폰트 크기 및 시스템 폰트 설정 */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            font-size: 16px; /* 모바일 기본 텍스트 크기 확보 */
             background-color: #f8fafc;
             color: #1e293b;
             margin: 0;
@@ -82,7 +80,7 @@
             font-weight: 800;
         }
 
-        /* 우측 다이어리 본문 영역 */
+        /* 우측 다이어리 본문 영역 (기본 PC 기준) */
         .diary-container {
             flex-grow: 1;
             max-width: 600px;
@@ -120,25 +118,29 @@
             background: #f1f5f9;
         }
 
-        /* 포스트 내부 폰트 및 줄 간격 최적화 */
+        /* PC 화면 본문 폰트 크기를 살짝 아담하게 조정 */
         .diary-main {
-            font-size: 1.05rem; /* 본문 글씨를 시원하게 확대 */
-            line-height: 1.8;   /* 줄 간격을 넓혀서 가독성 향상 */
+            font-size: 0.95rem; 
+            line-height: 1.7;   
         }
         .diary-main p {
             margin-bottom: 1em;
         }
 
-        /* ★ 모바일 반응형: 폭이 좁은 경우(768px 이하) 좌측 캘린더 숨기기 */
+        /* ★ 모바일 반응형: 폭이 좁은 경우(768px 이하) */
         @media (max-width: 768px) {
             .calendar-sidebar {
-                display: none; /* 모바일 화면에서는 캘린더 완전 숨김 */
+                display: none; /* 캘린더 숨김 */
             }
             .site-wrapper {
-                justify-content: center;
+                display: block; /* 플렉스 해제하여 본문이 100% 꽉 차게 설정 */
+                max-width: 100%;
+            }
+            .diary-container {
+                max-width: 100%; /* 모바일에서 좌우로 넓게 확장 */
             }
             body {
-                padding: 16px 12px;
+                padding: 16px 8px; /* 여백을 줄여서 화면 활용도 극대화 */
             }
         }
     </style>
