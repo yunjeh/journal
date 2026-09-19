@@ -65,42 +65,49 @@
     </div>
 
     <script>
-        // URL의 ?date=YYYY-MM-DD 값을 읽어오거나, 없으면 오늘 날짜(2026-09-19 기준)를 사용합니다.
-        const urlParams = new URLSearchParams(window.location.search);
-        let targetDate;
+        // 전역 함수로 헤더 날짜 업데이트 로직 정의
+        function updateHeaderDate(dateStr) {
+            const targetDate = new Date(dateStr + 'T00:00:00');
+            
+            // 한국어 날짜 표시 (예: 2026년 9월 19일)
+            const dateString = targetDate.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('header-date-text').innerText = dateString;
 
-        if (urlParams.has('date')) {
-            targetDate = new Date(urlParams.get('date') + 'T00:00:00');
-        } else {
-            targetDate = new Date("2026-09-19T00:00:00"); 
+            // 전날, 다음날 계산
+            let prevDate = new Date(targetDate);
+            prevDate.setDate(targetDate.getDate() - 1);
+
+            let nextDate = new Date(targetDate);
+            nextDate.setDate(targetDate.getDate() + 1);
+
+            // 날짜 포맷 함수 (YYYY-MM-DD)
+            function formatDate(d) {
+                let year = d.getFullYear();
+                let month = String(d.getMonth() + 1).padStart(2, '0');
+                let day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // 버튼 링크 연결
+            document.getElementById('prev-btn').href = `?date=${formatDate(prevDate)}`;
+            document.getElementById('next-btn').href = `?date=${formatDate(nextDate)}`;
         }
 
-        // 날짜 포맷 함수 (YYYY-MM-DD)
-        function formatDate(d) {
-            let year = d.getFullYear();
-            let month = String(d.getMonth() + 1).padStart(2, '0');
-            let day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+        // 페이지 로드 시 초기 URL 파라미터 반영
+        const initialParams = new URLSearchParams(window.location.search);
+        let initialDateStr = initialParams.get('date');
+        if (!initialDateStr) {
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            const d = String(today.getDate()).padStart(2, '0');
+            initialDateStr = `${y}-${m}-${d}`;
         }
-
-        // 상단 헤더에 한국어 날짜 표시 (오타 수정 완료)
-        const dateString = targetDate.toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-        document.getElementById('header-date-text').innerText = dateString;
-
-        // 전날, 다음날 계산
-        let prevDate = new Date(targetDate);
-        prevDate.setDate(targetDate.getDate() - 1);
-
-        let nextDate = new Date(targetDate);
-        nextDate.setDate(targetDate.getDate() + 1);
-
-        // 버튼 링크 연결
-        document.getElementById('prev-btn').href = `?date=${formatDate(prevDate)}`;
-        document.getElementById('next-btn').href = `?date=${formatDate(nextDate)}`;
+        updateHeaderDate(initialDateStr);
     </script>
 </body>
 </html>
