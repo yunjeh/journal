@@ -2,6 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <!-- ★ 핵심: 모바일 화면 비율과 반응형 뷰포트 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ page.title | default: site.title }}</title>
     <style>
         body {
@@ -118,7 +120,6 @@
             background: #f1f5f9;
         }
 
-        /* PC 화면 본문 폰트 크기 아담하게 설정 */
         .diary-main {
             font-size: 0.95rem; 
             line-height: 1.7;   
@@ -127,11 +128,11 @@
             margin-bottom: 1em;
         }
 
-        /* ★ 폭이 좁은 디바이스(모바일 등): 세로로 배치하고 포스트를 위로, 캘린더를 아래로 보냄 */
+        /* ★ 폭이 좁은 디바이스(모바일 등 768px 이하): 세로 배치 및 캘린더 하단 이동 */
         @media (max-width: 768px) {
             .site-wrapper {
-                flex-direction: column-reverse; /* 캘린더(첫 번째 요소)를 아래로 보냄 */
-                align-items: center;
+                flex-direction: column-reverse; /* 포스트가 위, 캘린더가 아래로 감 */
+                align-items: stretch;
                 max-width: 100%;
             }
             .diary-container {
@@ -140,8 +141,8 @@
             }
             .calendar-sidebar {
                 width: 100%;
-                max-width: 100%; /* 모바일에서 캘린더가 하단에 알맞은 폭으로 배치됨 */
-                margin-top: 20px;
+                max-width: 100%;
+                margin-top: 30px;
             }
             body {
                 padding: 16px 8px;
@@ -168,12 +169,12 @@
             <div id="cal-days-grid" class="cal-grid" style="margin-top: 2px;"></div>
         </aside>
 
-        <!-- 우측 다이어리 본문 영역 (모바일에서는 상단에 위치) -->
+        <!-- 우측 다이어리 본문 영역 (모바일에서는 상단에 넓게 배치) -->
         <div class="diary-container">
             <header class="diary-header">
-                <a href="#" id="prev-btn" class="nav-btn">◀</a>
+                <a href="#" id="prev-btn" class="nav-btn">◀ </a>
                 <h1 class="current-date" id="header-date-text">로딩 중...</h1>
-                <a href="#" id="next-btn" class="nav-btn">▶</a>
+                <a href="#" id="next-btn" class="nav-btn"> ▶</a>
             </header>
 
             <main class="diary-main">
