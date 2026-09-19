@@ -18,11 +18,9 @@
             max-width: 600px;
         }
         .diary-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            text-align: center;
             background: #ffffff;
-            padding: 15px 25px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             margin-bottom: 25px;
@@ -31,43 +29,21 @@
             font-size: 1.25rem;
             font-weight: 600;
             margin: 0;
+            color: #1e293b;
         }
-        .nav-btn {
-            background: none;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 6px 12px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: #64748b;
-        }
-        .diary-entry {
-            background: #ffffff;
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            border-left: 4px solid #3b82f6;
-        }
-        .entry-meta {
+        .diary-subtext {
             font-size: 0.85rem;
             color: #64748b;
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
-        .entry-content {
-            line-height: 1.7;
-            font-size: 1rem;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <div class="diary-container">
-        <!-- 상단 날짜 네비게이션 -->
+        <!-- 상단 날짜 헤더 -->
         <header class="diary-header">
-            <button class="nav-btn">◀</button>
             <h1 class="current-date">{{ site.time | date: "%Y년 %m월 %d일" }}</h1>
-            <button class="nav-btn">▶</button>
+            <div class="diary-subtext">매년 오늘 작성한 기록들</div>
         </header>
 
         <!-- 메인 피드 영역 -->
