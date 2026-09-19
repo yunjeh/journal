@@ -13,7 +13,7 @@
             display: flex;
             justify-content: center;
         }
-        /* 전체 레이아웃: 좌측 달력 + 우측 다이어리 본문 */
+        /* 전체 레이아웃: 기본은 좌측 캘린더 + 우측 다이어리 본문 */
         .site-wrapper {
             display: flex;
             gap: 24px;
@@ -80,7 +80,7 @@
             font-weight: 800;
         }
 
-        /* 우측 다이어리 본문 영역 (기본 PC 기준) */
+        /* 우측 다이어리 본문 영역 */
         .diary-container {
             flex-grow: 1;
             max-width: 600px;
@@ -118,7 +118,7 @@
             background: #f1f5f9;
         }
 
-        /* PC 화면 본문 폰트 크기를 살짝 아담하게 조정 */
+        /* PC 화면 본문 폰트 크기 아담하게 설정 */
         .diary-main {
             font-size: 0.95rem; 
             line-height: 1.7;   
@@ -127,27 +127,31 @@
             margin-bottom: 1em;
         }
 
-        /* ★ 모바일 반응형: 폭이 좁은 경우(768px 이하) */
+        /* ★ 폭이 좁은 디바이스(모바일 등): 세로로 배치하고 포스트를 위로, 캘린더를 아래로 보냄 */
         @media (max-width: 768px) {
-            .calendar-sidebar {
-                display: none; /* 캘린더 숨김 */
-            }
             .site-wrapper {
-                display: block; /* 플렉스 해제하여 본문이 100% 꽉 차게 설정 */
+                flex-direction: column-reverse; /* 캘린더(첫 번째 요소)를 아래로 보냄 */
+                align-items: center;
                 max-width: 100%;
             }
             .diary-container {
-                max-width: 100%; /* 모바일에서 좌우로 넓게 확장 */
+                max-width: 100%;
+                width: 100%;
+            }
+            .calendar-sidebar {
+                width: 100%;
+                max-width: 100%; /* 모바일에서 캘린더가 하단에 알맞은 폭으로 배치됨 */
+                margin-top: 20px;
             }
             body {
-                padding: 16px 8px; /* 여백을 줄여서 화면 활용도 극대화 */
+                padding: 16px 8px;
             }
         }
     </style>
 </head>
 <body>
     <div class="site-wrapper">
-        <!-- 좌측 캘린더 사이드바 (모바일에서는 숨겨짐) -->
+        <!-- 좌측 캘린더 사이드바 (모바일에서는 본문 아래로 이동) -->
         <aside class="calendar-sidebar">
             <div class="cal-header">
                 <span id="cal-month-title">로딩 중...</span>
@@ -164,7 +168,7 @@
             <div id="cal-days-grid" class="cal-grid" style="margin-top: 2px;"></div>
         </aside>
 
-        <!-- 우측 다이어리 본문 영역 -->
+        <!-- 우측 다이어리 본문 영역 (모바일에서는 상단에 위치) -->
         <div class="diary-container">
             <header class="diary-header">
                 <a href="#" id="prev-btn" class="nav-btn">◀ 전날</a>
